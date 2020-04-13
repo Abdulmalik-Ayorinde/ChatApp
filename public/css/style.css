@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 :root {
-	--dark-color-a: #667aff;
-	--dark-color-b: #7386ff;
-	--light-color: #e6e9ff;
+	--dark-color-a: #0dd1b0de;
+	--dark-color-b: #08c9bfe3;
+	--light-color: #d9d6f1ea;
+	--btn-color-t: #ffffff;
 	--success-color: #5cb85c;
 	--error-color: #d9534f;
 }
@@ -33,7 +34,7 @@ a {
 	cursor: pointer;
 	padding: 5px 15px;
 	background: var(--light-color);
-	color: var(--dark-color-a);
+	color: var(--btn-color-t);
 	border: 0;
 	font-size: 17px;
 }
