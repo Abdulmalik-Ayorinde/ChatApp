@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formartMessage = require('./utils/messages');
-const {userJoin, getCurrentUser} = require('./utils/users');
+const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -23,19 +23,43 @@ io.on('connection', socket => {
         socket.emit('message', formartMessage(botnic, `${user.username} Welcome to ChatApp`));
 
         //alert when a user connects
-        socket.broadcast.to(user.room).emit(
+        socket
+        .broadcast
+        .to(user.room)
+        .emit(
             'message',
-            formartMessage(botnic, `${user.username} has joined the chat`));
+            formartMessage(botnic,`${user.username} has joined the chat`)
+        );
+
+    //Send user info to room
+    io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
     });
 
     //cathching the chatMessage
     socket.on('chatMessage', (msg) =>{
-        io.emit('message', formartMessage(`${user.username} `, msg));
+        const user = getCurrentUser(socket.id);
+
+        io.to(user.room).emit('message', formartMessage(user.username, msg));
     })
 
     //alert when a user disconnects
         socket.on('disconnect', () => {
-            io.emit('message', formartMessage(botnic, `A user has left the chat`));
+            const user = userLeave(socket.id);
+
+            if(user){
+                io.to(user.room)
+                .emit('message', 
+                formartMessage(botnic, `${user.username} has left the chat`)
+                );
+
+                io.to(user.room).emit('roomUsers', {
+                    room: user.room,
+                    users: getRoomUsers(user.room)
+                  }); 
+            }
         })
     
 });
